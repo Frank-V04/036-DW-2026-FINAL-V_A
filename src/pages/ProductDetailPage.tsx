@@ -1,30 +1,44 @@
 import { Link, useParams } from 'react-router-dom'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
+import toast from 'react-hot-toast'
+import axios from 'axios'
 import { useProduct } from '../hooks/useProducts'
 import { getErrorMessage } from '../utils/errorHandler'
+import { fichaText } from '../utils/ficha'
 import type { Product } from '../types'
 
-// TODO 3.2 (Detalle y descarga): descargue la imagen del producto como archivo producto-{id}.<extensión>.
-//  - Pida la imagen (item.thumbnail) con axios y responseType: 'blob'.
-//  - Cree una URL temporal con URL.createObjectURL, descárguela con un <a download> y libérela con
-//    URL.revokeObjectURL al terminar.
-//  - La extensión sale del tipo del Blob (por ejemplo image/webp).
-//  - Si falla, muestre toast.error con getErrorMessage.
+// TODO 3.2: descarga la imagen como blob
 async function downloadImage(item: Product) {
-  void item
+  try {
+    const response = await axios.get<Blob>(item.thumbnail, { responseType: 'blob' })
+    const blob = response.data
+    const ext = blob.type.split('/')[1] ?? 'webp'
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `producto-${item.id}.${ext}`
+    a.click()
+    URL.revokeObjectURL(url)
+  } catch (err) {
+    toast.error(getErrorMessage(err))
+  }
 }
 
-// TODO 3.3 (Detalle y descarga): descargue la ficha de texto. Importe fichaText de ../utils/ficha: esa función
-// ya arma el texto. Cree un Blob de tipo text/plain con ese texto y descárguelo como producto-{id}.txt con
-// URL.createObjectURL y un <a download>; libere la URL con URL.revokeObjectURL al terminar.
+// TODO 3.3: descarga la ficha de texto
 function downloadFicha(item: Product) {
-  void item
+  const text = fichaText(item)
+  const blob = new Blob([text], { type: 'text/plain' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `producto-${item.id}.txt`
+  a.click()
+  URL.revokeObjectURL(url)
 }
 
 function ProductDetailPage() {
   const { id } = useParams()
-  // TODO 3.1: useProduct(Number(id)) ya devuelve los datos cuando complete el hook.
   const { data, isLoading, isError, error } = useProduct(Number(id))
 
   return (
@@ -35,7 +49,6 @@ function ProductDetailPage() {
 
       {isLoading && <p className="mt-6 text-slate-500" role="status">Cargando…</p>}
 
-      {/* TODO 3.1: si el id no existe (404) debe verse un mensaje claro con getErrorMessage. */}
       {isError && (
         <Alert variant="destructive" className="mt-6">
           <AlertDescription>{getErrorMessage(error)}</AlertDescription>
@@ -43,20 +56,21 @@ function ProductDetailPage() {
       )}
 
       {data && (
-          <article className="mt-4 grid gap-4 sm:grid-cols-2">
-            <img src={data.thumbnail} alt={data.title} className="w-full rounded-xl bg-slate-100 object-contain" />
-            <div className="space-y-2">
-              <span className="text-xs uppercase tracking-wide text-brand-700">{data.category}</span>
-              <h1 className="text-2xl font-bold">{data.title}</h1>
-              <p className="text-xl font-bold">${data.price.toFixed(2)}</p>
-              <p className="text-sm text-slate-600">{data.description}</p>
-              <p className="text-sm">Stock: {data.stock} · Valoración: {data.rating}</p>
-              <div className="flex flex-wrap gap-2">
-                <Button onClick={() => downloadImage(data)}>Descargar imagen</Button>
-                <Button variant="outline" onClick={() => downloadFicha(data)}>Descargar ficha</Button>
-              </div>
+        <article className="mt-4 grid gap-4 sm:grid-cols-2">
+          <img src={data.thumbnail} alt={data.title}
+            className="w-full rounded-xl bg-slate-100 object-contain" />
+          <div className="space-y-2">
+            <span className="text-xs uppercase tracking-wide text-brand-700">{data.category}</span>
+            <h1 className="text-2xl font-bold">{data.title}</h1>
+            <p className="text-xl font-bold">${data.price.toFixed(2)}</p>
+            <p className="text-sm text-slate-600">{data.description}</p>
+            <p className="text-sm">Stock: {data.stock} · Valoración: {data.rating}</p>
+            <div className="flex flex-wrap gap-2">
+              <Button onClick={() => downloadImage(data)}>Descargar imagen</Button>
+              <Button variant="outline" onClick={() => downloadFicha(data)}>Descargar ficha</Button>
             </div>
-          </article>
+          </div>
+        </article>
       )}
     </main>
   )
