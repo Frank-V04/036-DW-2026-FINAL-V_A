@@ -1,7 +1,21 @@
-# Examen Final · Desarrollo Web 036 · Variante A (productos)
+# 036 DW 2026 Final — Variante A
 
-Proyecto inicial de la **III Serie**. Compila y se ejecuta, pero las pantallas **no están conectadas a la API**:
-su trabajo es completar la lógica marcada con comentarios `TODO` numerados.
+Catálogo de productos con autenticación, paginación, búsqueda, detalle y CRUD, construido con React + TypeScript + TailwindCSS. Consume la API de DummyJSON (https://dummyjson.com).
+
+Demo en producción: https://036-dw-2026-final-v-a.vercel.app/
+
+## Tecnologías
+
+- React 19 + TypeScript
+- Vite — bundler y dev server
+- TailwindCSS v4 — estilos
+- React Router v7 — rutas
+- TanStack Query v5 — fetching y caché
+- Zustand v5 con persist — estado global y sesión
+- Axios — cliente HTTP con interceptores
+- React Hook Form + Zod v4 — formularios y validación
+- React Hot Toast — notificaciones
+- Shadcn/ui — componentes de interfaz
 
 ## Cómo empezar
 
@@ -11,42 +25,34 @@ cp .env.example .env
 npm run dev
 ```
 
-La app abre en `http://localhost:5173`. La dirección de la API (`https://dummyjson.com`) ya está en `src/config.ts`.
-Usuario de prueba de la API: `emilys` / `emilyspass`.
-
-## Cómo encontrar lo que debe completar
-
-En VS Code use **Buscar en archivos** (Ctrl+Mayús+F) con la palabra `TODO`. Cada comentario indica el número
-del requisito del enunciado y qué debe hacer. Los archivos con TODO son:
-
-| TODO | Archivo |
-| --- | --- |
-| 1.1 | `src/pages/LoginPage.tsx`, `src/services/authService.ts` |
-| 1.2 | `src/store/authStore.ts` |
-| 1.3 | `src/services/api.ts`, `src/services/authService.ts` |
-| 1.4 | `src/components/ProtectedRoute.tsx`, `src/App.tsx` |
-| 1.5, 2.3, 4.4, 5.2, 6.1 | `src/pages/ProductsPage.tsx` |
-| 2.1, 3.1, 4.3, 4.4 | `src/services/productService.ts` |
-| 2.2, 3.1, 4.3, 4.4 | `src/hooks/useProducts.ts` |
-| 3.1, 3.2, 3.3 | `src/pages/ProductDetailPage.tsx` (`fichaText` ya viene hecha en `src/utils/ficha.ts`) |
-| 4.1, 4.2, 4.3 | `src/components/ProductForm.tsx` |
-| 5.1 | `src/utils/errorHandler.ts` |
-| 5.3 | `src/App.tsx` |
-
-Ya vienen hechos y no debe modificarlos: las tarjetas, la paginación, la página 404, el `ErrorBoundary`,
-los tipos de la API (`src/types`), la dirección de la API (`src/config.ts`) y los componentes de shadcn/ui.
+La app abre en `http://localhost:5173`.
+Usuario de prueba: `emilys` / `emilyspass`.
 
 ## Comandos
 
 | Comando | Para qué |
 | --- | --- |
 | `npm run dev` | Servidor de desarrollo |
-| `npm run build` | Compila TypeScript y genera `dist/` (debe terminar sin errores) |
+| `npm run build` | Compila TypeScript y genera `dist/` |
+| `npm run preview` | Previsualiza el build de producción |
 | `npm run lint` | Revisa el código con ESLint |
 
-## Al entregar
+## Funcionalidades implementadas
 
-1. Suba su trabajo a **su propio repositorio** de GitHub. Solo se califican los commits hasta las **18:00 del 7 de noviembre de 2026 (hora de Guatemala)**.
-2. Reemplace este README por el suyo: descripción, instalación, tecnologías y capturas de pantalla.
-3. El despliegue es libre (Vercel, Netlify o similar). Ponga el enlace del sitio en su README y en la descripción del repositorio. El archivo `vercel.json` ya permite abrir rutas internas directamente.
-4. Entregue en Canvas el enlace de su repositorio.
+Autenticación: login con React Hook Form y Zod, store de sesión con Zustand persist, interceptor Axios para token Bearer, renovación automática de token ante 401, rutas protegidas con ProtectedRoute.
+
+Listado: paginación del servidor (8 por página), búsqueda por texto, página y búsqueda en la URL con useSearchParams, sin parpadeo al cambiar página.
+
+Detalle: vista de detalle por ID, descarga de imagen como archivo blob, descarga de ficha en texto plano.
+
+Crear y eliminar: formulario con validación de título, precio y descripción, validación de imagen (solo JPG/PNG, máximo 1 MB), vista previa antes de enviar, confirmación antes de eliminar.
+
+Errores: mensajes en español para 400, 401, 403, 404, 500 y sin conexión, card de error con botón Reintentar, página 404 para rutas no encontradas.
+
+Interfaz: cuadrícula responsive de 1 columna en móvil, 2 en tableta y 4 en escritorio, sin scroll horizontal.
+
+## Despliegue
+
+Desplegado en Vercel. El archivo `vercel.json` permite abrir rutas internas directamente.
+
+https://036-dw-2026-final-v-a.vercel.app/
